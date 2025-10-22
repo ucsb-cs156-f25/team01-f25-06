@@ -18,7 +18,7 @@ Deployments:
 | RecommendationRequest     | Abhiram Agina | AbhiramA02     |
 | MenuItemReview            | Julia Lin     | jml557         |
 | HelpRequest               | Andrew Shen   | andrewzshen    |
-| Articles                  | Natalie Forte | natalieforte   |
+| Articles                  | Natalie Forte | fortenatalie   |
 
 Remember though, that in spite of these initial  assignments, it is still
 a team project.  Please help other team members to finish their work

@@ -2,6 +2,7 @@ package edu.ucsb.cs156.example.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.ucsb.cs156.example.entities.Articles;
+import edu.ucsb.cs156.example.errors.EntityNotFoundException;
 import edu.ucsb.cs156.example.repositories.ArticlesRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,23 +40,23 @@ public class ArticlesController extends ApiController {
     return articles;
   }
 
-  // /**
-  //  * Get a single date by id
-  //  *
-  //  * @param id the id of the date
-  //  * @return a UCSBDate
-  //  */
-  // @Operation(summary = "Get a single date")
-  // @PreAuthorize("hasRole('ROLE_USER')")
-  // @GetMapping("")
-  // public UCSBDate getById(@Parameter(name = "id") @RequestParam Long id) {
-  //   UCSBDate ucsbDate =
-  //       ucsbDateRepository
-  //           .findById(id)
-  //           .orElseThrow(() -> new EntityNotFoundException(UCSBDate.class, id));
+  /**
+   * Get a single article by id
+   *
+   * @param id the id of the article
+   * @return a Articles
+   */
+  @Operation(summary = "Get a single article")
+  @PreAuthorize("hasRole('ROLE_USER')")
+  @GetMapping("")
+  public Articles getById(@Parameter(name = "id") @RequestParam Long id) {
+    Articles article =
+        articlesRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(Articles.class, id));
 
-  //   return ucsbDate;
-  // }
+    return article;
+  }
 
   /**
    * Create a new article

@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -105,24 +106,24 @@ public class ArticlesController extends ApiController {
     return savedArticle;
   }
 
-  // /**
-  //  * Delete a UCSBDate
-  //  *
-  //  * @param id the id of the date to delete
-  //  * @return a message indicating the date was deleted
-  //  */
-  // @Operation(summary = "Delete a UCSBDate")
-  // @PreAuthorize("hasRole('ROLE_ADMIN')")
-  // @DeleteMapping("")
-  // public Object deleteUCSBDate(@Parameter(name = "id") @RequestParam Long id) {
-  //   UCSBDate ucsbDate =
-  //       ucsbDateRepository
-  //           .findById(id)
-  //           .orElseThrow(() -> new EntityNotFoundException(UCSBDate.class, id));
+  /**
+   * Delete an Article
+   *
+   * @param id the id of the article to delete
+   * @return a message indicating the article was deleted
+   */
+  @Operation(summary = "Delete an Article")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @DeleteMapping("")
+  public Object deleteArticle(@Parameter(name = "id") @RequestParam Long id) {
+    Articles article =
+        articlesRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(Articles.class, id));
 
-  //   ucsbDateRepository.delete(ucsbDate);
-  //   return genericMessage("UCSBDate with id %s deleted".formatted(id));
-  // }
+    articlesRepository.delete(article);
+    return genericMessage("Articles with id %s deleted".formatted(id));
+  }
 
   /**
    * Update a single article

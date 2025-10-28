@@ -18,6 +18,7 @@ import edu.ucsb.cs156.example.repositories.UserRepository;
 import edu.ucsb.cs156.example.testconfig.TestConfig;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -143,5 +144,48 @@ public class UCSBDiningCommonsMenuItemControllerTests extends ControllerTestCase
     String expectedJson = mapper.writeValueAsString(item);
     String responseString = response.getResponse().getContentAsString();
     assertEquals(expectedJson, responseString);
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void test_getById_exists() throws Exception {
+    UCSBDiningCommonsMenuItem item =
+        UCSBDiningCommonsMenuItem.builder()
+            .id(1L)
+            .diningCommonsCode("ortega")
+            .name("Pancakes")
+            .station("Breakfast")
+            .build();
+
+    when(ucsbDiningCommonsMenuItemRepository.findById(1L)).thenReturn(Optional.of(item));
+
+    MvcResult response =
+        mockMvc
+            .perform(get("/api/ucsbdiningcommonsmenuitem?id=1"))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    verify(ucsbDiningCommonsMenuItemRepository, times(1)).findById(1L);
+    String expectedJson = mapper.writeValueAsString(item);
+    assertEquals(expectedJson, response.getResponse().getContentAsString());
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void test_getById_not_found() throws Exception {
+    when(ucsbDiningCommonsMenuItemRepository.findById(999L)).thenReturn(Optional.empty());
+
+    MvcResult response =
+        mockMvc
+            .perform(get("/api/ucsbdiningcommonsmenuitem?id=999"))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    verify(ucsbDiningCommonsMenuItemRepository, times(1)).findById(999L);
+
+    String responseString = response.getResponse().getContentAsString();
+    assertEquals(
+        "{\"message\":\"UCSBDiningCommonsMenuItem with id 999 not found\",\"type\":\"EntityNotFoundException\"}",
+        responseString);
   }
 }

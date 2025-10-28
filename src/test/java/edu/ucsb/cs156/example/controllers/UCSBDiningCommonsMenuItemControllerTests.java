@@ -2,6 +2,7 @@ package edu.ucsb.cs156.example.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,6 +39,36 @@ public class UCSBDiningCommonsMenuItemControllerTests extends ControllerTestCase
     mockMvc
         .perform(get("/api/ucsbdiningcommonsmenuitem/all"))
         .andExpect(status().is(403)); // not logged in
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void regular_user_can_post_menu_item() throws Exception {
+    UCSBDiningCommonsMenuItem item =
+        UCSBDiningCommonsMenuItem.builder()
+            .diningCommonsCode("ortega")
+            .name("Pancakes")
+            .station("Breakfast")
+            .build();
+
+    when(ucsbDiningCommonsMenuItemRepository.save(eq(item))).thenReturn(item);
+
+    MvcResult response =
+        mockMvc
+            .perform(
+                post("/api/ucsbdiningcommonsmenuitem/post?diningCommonsCode=ortega&name=Pancakes&station=Breakfast")
+                    .with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    verify(ucsbDiningCommonsMenuItemRepository, times(1)).save(item);
+    String expectedJson = mapper.writeValueAsString(item);
+    assertEquals(expectedJson, response.getResponse().getContentAsString());
+  }
+
+  @Test
+  public void logged_out_user_cannot_post() throws Exception {
+    mockMvc.perform(post("/api/ucsbdiningcommonsmenuitem/post")).andExpect(status().is(403));
   }
 
   @WithMockUser(roles = {"USER"})

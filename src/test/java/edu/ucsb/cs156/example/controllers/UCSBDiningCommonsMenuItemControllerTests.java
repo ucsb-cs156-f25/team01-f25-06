@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import edu.ucsb.cs156.example.ControllerTestCase;
 import edu.ucsb.cs156.example.entities.UCSBDiningCommonsMenuItem;
 import edu.ucsb.cs156.example.repositories.UCSBDiningCommonsMenuItemRepository;
@@ -182,10 +183,12 @@ public class UCSBDiningCommonsMenuItemControllerTests extends ControllerTestCase
             .andReturn();
 
     verify(ucsbDiningCommonsMenuItemRepository, times(1)).findById(999L);
-
     String responseString = response.getResponse().getContentAsString();
-    assertEquals(
-        "{\"message\":\"UCSBDiningCommonsMenuItem with id 999 not found\",\"type\":\"EntityNotFoundException\"}",
-        responseString);
+
+    JsonNode expected =
+        mapper.readTree(
+            "{\"message\":\"UCSBDiningCommonsMenuItem with id 999 not found\",\"type\":\"EntityNotFoundException\"}");
+    JsonNode actual = mapper.readTree(responseString);
+    assertEquals(expected, actual);
   }
 }

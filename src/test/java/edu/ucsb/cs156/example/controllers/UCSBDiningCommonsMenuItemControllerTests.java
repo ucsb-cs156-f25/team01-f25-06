@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -207,9 +208,9 @@ public class UCSBDiningCommonsMenuItemControllerTests extends ControllerTestCase
     UCSBDiningCommonsMenuItem editedItem =
         UCSBDiningCommonsMenuItem.builder()
             .id(1L)
-            .diningCommonsCode("ortega")
+            .diningCommonsCode("portola")
             .name("Vegan Pancakes")
-            .station("Breakfast")
+            .station("Bakery")
             .build();
 
     when(ucsbDiningCommonsMenuItemRepository.findById(eq(1L)))
@@ -230,13 +231,17 @@ public class UCSBDiningCommonsMenuItemControllerTests extends ControllerTestCase
             .andExpect(status().isOk())
             .andReturn();
 
-    verify(ucsbDiningCommonsMenuItemRepository, times(1)).findById(1L);
-    verify(ucsbDiningCommonsMenuItemRepository, times(1))
-        .save(any(UCSBDiningCommonsMenuItem.class));
+    ArgumentCaptor<UCSBDiningCommonsMenuItem> captor =
+        ArgumentCaptor.forClass(UCSBDiningCommonsMenuItem.class);
+    verify(ucsbDiningCommonsMenuItemRepository).save(captor.capture());
+    UCSBDiningCommonsMenuItem savedItem = captor.getValue();
 
-    String responseString = response.getResponse().getContentAsString();
+    assertEquals("Vegan Pancakes", savedItem.getName());
+    assertEquals("Bakery", savedItem.getStation());
+    assertEquals("portola", savedItem.getDiningCommonsCode());
+
     String expectedJson = mapper.writeValueAsString(editedItem);
-    assertEquals(expectedJson, responseString);
+    assertEquals(expectedJson, response.getResponse().getContentAsString());
   }
 
   @WithMockUser(roles = {"USER"})
@@ -244,10 +249,10 @@ public class UCSBDiningCommonsMenuItemControllerTests extends ControllerTestCase
   public void test_put_menu_item_not_found() throws Exception {
     UCSBDiningCommonsMenuItem editedItem =
         UCSBDiningCommonsMenuItem.builder()
-            .id(99L)
-            .diningCommonsCode("ortega")
+            .id(1L)
+            .diningCommonsCode("portola") // different from original
             .name("Vegan Pancakes")
-            .station("Breakfast")
+            .station("Bakery")
             .build();
 
     when(ucsbDiningCommonsMenuItemRepository.findById(eq(99L))).thenReturn(Optional.empty());

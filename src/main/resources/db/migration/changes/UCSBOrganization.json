@@ -1,64 +1,124 @@
 {
-    "databaseChangeLog": [
-      {
-        "changeSet": {
-          "id": "UCSBOrganization-1",
-          "author": "AustinChan",
-          "preConditions": [
-            {
-              "onFail": "MARK_RAN"
-            },
-            {
-              "not": [
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "UCSBOrganization-1",
+        "author": "AustinChan",
+        "preConditions": [
+          {
+            "onFail": "MARK_RAN"
+          },
+          {
+            "not": [
+              {
+                "tableExists": {
+                  "tableName": "UCSBORGANIZATIONS"
+                }
+              }
+            ]
+          }
+        ],
+        "changes": [
+          {
+            "createTable": {
+              "columns": [
                 {
-                  "tableExists": {
-                    "tableName": "UCSBORGANIZATION"
+                  "column": {
+                    "constraints": {
+                      "primaryKey": true,
+                      "primaryKeyName": "UCSBORGANIZATIONS_PK"
+                    },
+                    "name": "ORG_CODE",
+                    "type": "VARCHAR(255)"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "ORG_TRANSLATION_SHORT",
+                    "type": "VARCHAR(255)"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "ORG_TRANSLATION",
+                    "type": "VARCHAR(255)"
+                  }
+                },
+                {
+                  "column": {
+                    "constraints": {
+                      "nullable": false
+                    },
+                    "name": "INACTIVE",
+                    "type": "BOOLEAN"
                   }
                 }
-              ]
+              ],
+              "tableName": "UCSBORGANIZATIONS"
             }
-          ],
-          "changes": [
-            {
-              "createTable": {
-                "columns": [
-                  {
-                    "column": {
-                      "constraints": {
-                        "primaryKey": true,
-                        "primaryKeyName": "UCSBORGANIZATION_PK"
-                      },
-                      "name": "ORG_CODE",
-                      "type": "VARCHAR(255)"
-                    }
-                  },
-                  {
-                    "column": {
-                      "name": "ORG_TRANSLATION_SHORT",
-                      "type": "VARCHAR(255)"
-                    }
-                  },
-                  {
-                    "column": {
-                      "name": "ORG_TRANSLATION",
-                      "type": "VARCHAR(255)"
-                    }
-                  },
-                  {
-                    "column": {
-                      "constraints": {
-                        "nullable": false
-                      },
-                      "name": "INACTIVE",
-                      "type": "BOOLEAN"
-                    }
-                  }
-                ],
-                "tableName": "UCSBORGANIZATION"
-              }
-            }
-          ]
-        }
+          }
+        ]
       }
-    ]
-  }
+    }
+    ,
+    {
+      "changeSet": {
+        "id": "UCSBOrganization-fix-pk-orgcode",
+        "author": "AustinChan",
+        "preConditions": [
+          { "onFail": "CONTINUE" }
+        ],
+        "changes": [
+          {
+            "dropPrimaryKey": {
+              "tableName": "UCSBORGANIZATIONS"
+            }
+          },
+          {
+            "addNotNullConstraint": {
+              "tableName": "UCSBORGANIZATIONS",
+              "columnName": "ORG_CODE",
+              "columnDataType": "VARCHAR(255)"
+            }
+          },
+          {
+            "addPrimaryKey": {
+              "tableName": "UCSBORGANIZATIONS",
+              "columnNames": "ORG_CODE",
+              "constraintName": "UCSBORGANIZATIONS_PK"
+            }
+          },
+          {
+            "preConditions": [
+              { "onFail": "MARK_RAN" },
+              {
+                "columnExists": {
+                  "tableName": "UCSBORGANIZATIONS",
+                  "columnName": "ID"
+                }
+              }
+            ],
+            "dropColumn": {
+              "tableName": "UCSBORGANIZATIONS",
+              "columnName": "ID"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "UCSBOrganization-rename-to-singular",
+        "author": "AustinChan",
+        "changes": [
+          {
+            "renameTable": {
+              "oldTableName": "UCSBORGANIZATIONS",
+              "newTableName": "UCSBORGANIZATION"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

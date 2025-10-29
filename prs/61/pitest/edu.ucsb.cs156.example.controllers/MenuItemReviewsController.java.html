@@ -1787,16 +1787,16 @@
 <a name='org.pitest.mutationtest.report.html.SourceFile@6b03c35c_126'/>
 126
 </td>
-<td class='survived'>
+<td class='killed'>
 <span class='pop'>
 <a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6b03c35c_126'>1</a>
 <span>
-1. updateMenuItemReview : removed call to edu/ucsb/cs156/example/entities/MenuItemReview::setItemId &rarr; SURVIVED<br/>
+1. updateMenuItemReview : removed call to edu/ucsb/cs156/example/entities/MenuItemReview::setItemId &rarr; KILLED<br/>
 
 </span>
 </span>
 </td>
-<td class='covered'><pre><span  class='survived'>    menuItemReview.setItemId(incoming.getItemId());</span></pre></td></tr>
+<td class='covered'><pre><span  class='killed'>    menuItemReview.setItemId(incoming.getItemId());</span></pre></td></tr>
 
 <tr>
 <td class='covered'>
@@ -2069,13 +2069,8 @@
 
 <a name='grouporg.pitest.mutationtest.report.html.SourceFile@6b03c35c_126'/> 
 
-<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>updateMenuItemReview<br/><b>Killed by : </b>none</span></span> removed call to edu/ucsb/cs156/example/entities/MenuItemReview::setItemId &rarr; SURVIVED</span>
-<a title="Click to view covering tests" class="view-covered-by-tests" onClick="document.getElementById('MutationIdentifier-[location=Location-[clazz=edu.ucsb.cs156.example.controllers.MenuItemReviewsController,-method=updateMenuItemReview,-methodDesc=(Ljava/lang/Long;Ledu/ucsb/cs156/example/entities/MenuItemReview;)Ledu/ucsb/cs156/example/entities/MenuItemReview;],-indexes=[21],-mutator=org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator]').style.display=(document.getElementById('MutationIdentifier-[location=Location-[clazz=edu.ucsb.cs156.example.controllers.MenuItemReviewsController,-method=updateMenuItemReview,-methodDesc=(Ljava/lang/Long;Ledu/ucsb/cs156/example/entities/MenuItemReview;)Ledu/ucsb/cs156/example/entities/MenuItemReview;],-indexes=[21],-mutator=org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator]').style.display == 'block')?'none':'block';">Covering tests</a>
-<div class="covered-tests" id="MutationIdentifier-[location=Location-[clazz=edu.ucsb.cs156.example.controllers.MenuItemReviewsController,-method=updateMenuItemReview,-methodDesc=(Ljava/lang/Long;Ledu/ucsb/cs156/example/entities/MenuItemReview;)Ledu/ucsb/cs156/example/entities/MenuItemReview;],-indexes=[21],-mutator=org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator]" style="display:none;">Covered by tests:
-<ul>
-<li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:admin_can_edit_an_existing_menuitemreview()]</li> 
-</ul>
-</div></div> 
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>updateMenuItemReview<br/><b>Killed by : </b>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:admin_can_edit_an_existing_menuitemreview()]</span></span> removed call to edu/ucsb/cs156/example/entities/MenuItemReview::setItemId &rarr; KILLED</span>
+</div> 
 </td>
 </tr>
 <tr>
@@ -2155,7 +2150,7 @@
 
 <h2>Tests examined</h2>
 <ul>
-<li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:an_admin_user_can_post_a_new_menuitemreview()] (15 ms)</li><li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:admin_can_edit_an_existing_menuitemreview()] (17 ms)</li><li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:admin_cannot_edit_menuitemreview_that_does_not_exist()] (8 ms)</li><li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:logged_in_users_can_get_all()] (4 ms)</li><li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:logged_in_user_can_get_all_menuitemreviews()] (14 ms)</li><li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:test_that_logged_in_user_can_get_by_id_when_the_id_exists()] (4 ms)</li><li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:test_that_logged_in_user_can_get_by_id_when_the_id_does_not_exist()] (6 ms)</li>
+<li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:an_admin_user_can_post_a_new_menuitemreview()] (13 ms)</li><li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:admin_can_edit_an_existing_menuitemreview()] (18 ms)</li><li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:admin_cannot_edit_menuitemreview_that_does_not_exist()] (7 ms)</li><li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:logged_in_users_can_get_all()] (3 ms)</li><li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:logged_in_user_can_get_all_menuitemreviews()] (12 ms)</li><li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:test_that_logged_in_user_can_get_by_id_when_the_id_exists()] (4 ms)</li><li>edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests.[engine:junit-jupiter]/[class:edu.ucsb.cs156.example.controllers.MenuItemReviewsControllerTests]/[method:test_that_logged_in_user_can_get_by_id_when_the_id_does_not_exist()] (10 ms)</li>
 </ul>
 
 <br/>

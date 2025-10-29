@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -188,6 +190,91 @@ public class UCSBDiningCommonsMenuItemControllerTests extends ControllerTestCase
     JsonNode expected =
         mapper.readTree(
             "{\"message\":\"UCSBDiningCommonsMenuItem with id 999 not found\",\"type\":\"EntityNotFoundException\"}");
+    JsonNode actual = mapper.readTree(responseString);
+    assertEquals(expected, actual);
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void test_put_menu_item_success() throws Exception {
+    UCSBDiningCommonsMenuItem originalItem =
+        UCSBDiningCommonsMenuItem.builder()
+            .id(1L)
+            .diningCommonsCode("ortega")
+            .name("Pancakes")
+            .station("Breakfast")
+            .build();
+
+    UCSBDiningCommonsMenuItem editedItem =
+        UCSBDiningCommonsMenuItem.builder()
+            .id(1L)
+            .diningCommonsCode("portola")
+            .name("Vegan Pancakes")
+            .station("Bakery")
+            .build();
+
+    when(ucsbDiningCommonsMenuItemRepository.findById(eq(1L)))
+        .thenReturn(Optional.of(originalItem));
+    when(ucsbDiningCommonsMenuItemRepository.save(any(UCSBDiningCommonsMenuItem.class)))
+        .thenReturn(editedItem);
+
+    String requestBody = mapper.writeValueAsString(editedItem);
+
+    MvcResult response =
+        mockMvc
+            .perform(
+                put("/api/ucsbdiningcommonsmenuitem?id=1")
+                    .contentType("application/json")
+                    .characterEncoding("utf-8")
+                    .content(requestBody)
+                    .with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    ArgumentCaptor<UCSBDiningCommonsMenuItem> captor =
+        ArgumentCaptor.forClass(UCSBDiningCommonsMenuItem.class);
+    verify(ucsbDiningCommonsMenuItemRepository).save(captor.capture());
+    UCSBDiningCommonsMenuItem savedItem = captor.getValue();
+
+    assertEquals("Vegan Pancakes", savedItem.getName());
+    assertEquals("Bakery", savedItem.getStation());
+    assertEquals("portola", savedItem.getDiningCommonsCode());
+
+    String expectedJson = mapper.writeValueAsString(editedItem);
+    assertEquals(expectedJson, response.getResponse().getContentAsString());
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void test_put_menu_item_not_found() throws Exception {
+    UCSBDiningCommonsMenuItem editedItem =
+        UCSBDiningCommonsMenuItem.builder()
+            .id(1L)
+            .diningCommonsCode("portola") // different from original
+            .name("Vegan Pancakes")
+            .station("Bakery")
+            .build();
+
+    when(ucsbDiningCommonsMenuItemRepository.findById(eq(99L))).thenReturn(Optional.empty());
+
+    String requestBody = mapper.writeValueAsString(editedItem);
+
+    MvcResult response =
+        mockMvc
+            .perform(
+                put("/api/ucsbdiningcommonsmenuitem?id=99")
+                    .contentType("application/json")
+                    .characterEncoding("utf-8")
+                    .content(requestBody)
+                    .with(csrf()))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    verify(ucsbDiningCommonsMenuItemRepository, times(1)).findById(99L);
+    String responseString = response.getResponse().getContentAsString();
+    JsonNode expected =
+        mapper.readTree(
+            "{\"message\":\"UCSBDiningCommonsMenuItem with id 99 not found\",\"type\":\"EntityNotFoundException\"}");
     JsonNode actual = mapper.readTree(responseString);
     assertEquals(expected, actual);
   }

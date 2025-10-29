@@ -18,6 +18,7 @@ import edu.ucsb.cs156.example.testconfig.TestConfig;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -35,6 +36,8 @@ public class RecommendationRequestsControllerTests extends ControllerTestCase {
     mockMvc
         .perform(get("/api/recommendationrequests/all"))
         .andExpect(status().is(403)); // logged out users can't get all
+
+    verify(recommendationRequestRepository, times(0)).findAll();
   }
 
   @WithMockUser(roles = {"USER"})
@@ -46,6 +49,7 @@ public class RecommendationRequestsControllerTests extends ControllerTestCase {
   @Test
   public void logged_out_users_cannot_post() throws Exception {
     mockMvc.perform(post("/api/recommendationrequests/post")).andExpect(status().is(403));
+    verify(recommendationRequestRepository, times(0)).save(Mockito.any());
   }
 
   @WithMockUser(roles = {"USER"})
@@ -54,6 +58,7 @@ public class RecommendationRequestsControllerTests extends ControllerTestCase {
     mockMvc
         .perform(post("/api/recommendationrequests/post"))
         .andExpect(status().is(403)); // only admins can post
+    verify(recommendationRequestRepository, times(0)).save(Mockito.any());
   }
 
   @WithMockUser(roles = {"USER"})

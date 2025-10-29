@@ -76,7 +76,7 @@ public class RecommendationRequestsControllerTests extends ControllerTestCase {
             .explanation("masters")
             .dateRequested(ldt1)
             .dateNeeded(ldt2)
-            .done(true)
+            .done(false)
             .build();
 
     ArrayList<RecommendationRequest> expectedRecommendationRequests = new ArrayList<>();
@@ -114,7 +114,7 @@ public class RecommendationRequestsControllerTests extends ControllerTestCase {
             .explanation("masters")
             .dateRequested(ldt1)
             .dateNeeded(ldt2)
-            .done(true)
+            .done(false)
             .build();
 
     when(recommendationRequestRepository.save(eq(recommendationRequest1)))

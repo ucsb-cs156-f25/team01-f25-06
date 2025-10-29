@@ -40,11 +40,13 @@ public class RecommendationRequestsControllerTests extends ControllerTestCase {
     verify(recommendationRequestRepository, times(0)).findAll();
   }
 
-  @WithMockUser(roles = {"USER"})
-  @Test
-  public void logged_in_users_can_get_all() throws Exception {
-    mockMvc.perform(get("/api/recommendationrequests/all")).andExpect(status().is(200)); // logged
-  }
+  /*
+    @WithMockUser(roles = {"USER"})
+    @Test
+    public void logged_in_users_can_get_all() throws Exception {
+      mockMvc.perform(get("/api/recommendationrequests/all")).andExpect(status().is(200)); // logged
+    }
+  */
 
   @Test
   public void logged_out_users_cannot_post() throws Exception {

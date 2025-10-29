@@ -23,4 +23,4 @@ repo_name: "TBD"
 repo: ucsb-cs156-f25/team01-f25-06
 owner: ucsb-cs156-f25
 repo_name: team01-f25-06
-pull_requests: []
+pull_requests: [{"author":{"id":"MDQ6VXNlcjY3MDI5MzIw","is_bot":false,"login":"andrewzshen","name":"Andrew Shen"},"headRefName":"andrew-endpoints","number":73,"title":"Wrote all the controllers and tests","url":"https://github.com/ucsb-cs156-f25/team01-f25-06/pull/73"}]

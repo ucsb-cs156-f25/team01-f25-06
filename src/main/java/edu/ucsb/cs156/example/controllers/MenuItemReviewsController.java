@@ -113,7 +113,7 @@ public class MenuItemReviewsController extends ApiController {
    * @param incoming the new review
    * @return the updated review object
    */
-  @Operation(summary = "Update a single date")
+  @Operation(summary = "Update a single review")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PutMapping("")
   public MenuItemReview updateMenuItemReview(

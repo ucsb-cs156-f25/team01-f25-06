@@ -1,6 +1,7 @@
 package edu.ucsb.cs156.example.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -114,7 +115,7 @@ public class RecommendationRequestsControllerTests extends ControllerTestCase {
             .explanation("masters")
             .dateRequested(ldt1)
             .dateNeeded(ldt2)
-            .done(false)
+            .done(true)
             .build();
 
     when(recommendationRequestRepository.save(eq(recommendationRequest1)))
@@ -124,7 +125,7 @@ public class RecommendationRequestsControllerTests extends ControllerTestCase {
     MvcResult response =
         mockMvc
             .perform(
-                post("/api/recommendationrequests/post?requesterEmail=abhiramagina@gmail.com&professorEmail=abhiram_agina@ucsb.edu&explanation=masters&dateRequested=2025-10-28T00:00:00&dateNeeded=2025-10-29T00:00:00&done=false")
+                post("/api/recommendationrequests/post?requesterEmail=abhiramagina@gmail.com&professorEmail=abhiram_agina@ucsb.edu&explanation=masters&dateRequested=2025-10-28T00:00:00&dateNeeded=2025-10-29T00:00:00&done=true")
                     .with(csrf()))
             .andExpect(status().isOk())
             .andReturn();
@@ -133,6 +134,7 @@ public class RecommendationRequestsControllerTests extends ControllerTestCase {
     verify(recommendationRequestRepository, times(1)).save(eq(recommendationRequest1));
     String expectedJson = mapper.writeValueAsString(recommendationRequest1);
     String responseString = response.getResponse().getContentAsString();
+    assertTrue(responseString.contains("\"done\":true"));
     assertEquals(expectedJson, responseString);
   }
 }

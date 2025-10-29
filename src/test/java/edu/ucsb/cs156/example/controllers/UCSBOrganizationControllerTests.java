@@ -17,6 +17,7 @@ import edu.ucsb.cs156.example.repositories.UserRepository;
 import edu.ucsb.cs156.example.testconfig.TestConfig;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -97,7 +98,6 @@ public class UCSBOrganizationControllerTests extends ControllerTestCase {
         mockMvc.perform(get("/api/ucsborganizations/all")).andExpect(status().isOk()).andReturn();
 
     // assert
-
     verify(ucsbOrganizationRepository, times(1)).findAll();
     String expectedJson = mapper.writeValueAsString(expectedOrganizations);
     String responseString = response.getResponse().getContentAsString();
@@ -164,5 +164,88 @@ public class UCSBOrganizationControllerTests extends ControllerTestCase {
     String expectedJson = mapper.writeValueAsString(org);
     String responseString = response.getResponse().getContentAsString();
     assertEquals(expectedJson, responseString);
+  }
+
+  @Test
+  public void logged_out_users_cannot_get_by_id() throws Exception {
+    mockMvc
+        .perform(get("/api/ucsborganizations?orgCode=SKY"))
+        .andExpect(status().is(403)); // logged out users can't get by id
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void logged_in_users_can_get_by_id() throws Exception {
+    // arrange
+    UCSBOrganization org =
+        UCSBOrganization.builder()
+            .orgCode("SKY")
+            .orgTranslationShort("SKYDIVING CLUB")
+            .orgTranslation("SKYDIVING CLUB AT UCSB")
+            .inactive(false)
+            .build();
+
+    when(ucsbOrganizationRepository.findById("SKY")).thenReturn(Optional.of(org));
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(get("/api/ucsborganizations?orgCode=SKY"))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // assert
+    verify(ucsbOrganizationRepository, times(1)).findById("SKY");
+    String expectedJson = mapper.writeValueAsString(org);
+    String responseString = response.getResponse().getContentAsString();
+    assertEquals(expectedJson, responseString);
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void logged_in_user_can_get_by_id_with_inactive_true() throws Exception {
+    // arrange
+    UCSBOrganization org =
+        UCSBOrganization.builder()
+            .orgCode("OSLI")
+            .orgTranslationShort("STUDENT LIFE")
+            .orgTranslation("OFFICE OF STUDENT LIFE")
+            .inactive(true)
+            .build();
+
+    when(ucsbOrganizationRepository.findById("OSLI")).thenReturn(Optional.of(org));
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(get("/api/ucsborganizations?orgCode=OSLI"))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // assert
+    verify(ucsbOrganizationRepository, times(1)).findById("OSLI");
+    String expectedJson = mapper.writeValueAsString(org);
+    String responseString = response.getResponse().getContentAsString();
+    assertEquals(expectedJson, responseString);
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void logged_in_user_cannot_get_by_id_when_organization_not_found() throws Exception {
+    // arrange
+    when(ucsbOrganizationRepository.findById("DNE")).thenReturn(Optional.empty());
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(get("/api/ucsborganizations?orgCode=DNE"))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    // assert
+    verify(ucsbOrganizationRepository, times(1)).findById("DNE");
+    String responseString = response.getResponse().getContentAsString();
+    assert responseString.contains("EntityNotFoundException");
+    assert responseString.contains("DNE");
   }
 }

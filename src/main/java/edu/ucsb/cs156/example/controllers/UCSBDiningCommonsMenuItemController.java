@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -107,5 +108,25 @@ public class UCSBDiningCommonsMenuItemController extends ApiController {
 
     UCSBDiningCommonsMenuItem updated = ucsbDiningCommonsMenuItemRepository.save(existing);
     return updated;
+  }
+
+  /**
+   * Delete a UCSBDiningCommonsMenuItem by id
+   *
+   * @param id the id of the menu item to delete
+   * @return a message indicating success or not found
+   */
+  @Operation(summary = "Delete a UCSB Dining Commons Menu Item by id")
+  @PreAuthorize("hasRole('ROLE_USER')")
+  @DeleteMapping("")
+  public ResponseEntity<String> deleteMenuItem(@Parameter(name = "id") @RequestParam Long id) {
+
+    UCSBDiningCommonsMenuItem item =
+        ucsbDiningCommonsMenuItemRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(UCSBDiningCommonsMenuItem.class, id));
+
+    ucsbDiningCommonsMenuItemRepository.delete(item);
+    return ResponseEntity.ok("record " + id + " deleted");
   }
 }

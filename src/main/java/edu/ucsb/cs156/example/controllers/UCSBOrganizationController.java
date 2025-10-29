@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,5 +83,24 @@ public class UCSBOrganizationController extends ApiController {
     UCSBOrganization savedOrganization = ucsbOrganizationRepository.save(organization);
 
     return savedOrganization;
+  }
+
+  /**
+   * This method deletes an organization. Accessible only to users with the role "ROLE_ADMIN".
+   *
+   * @param orgCode code of the organization to delete
+   * @return a message indicating the organization was deleted
+   */
+  @Operation(summary = "Delete an organization")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @DeleteMapping("")
+  public Object deleteOrganization(@Parameter(name = "orgCode") @RequestParam String orgCode) {
+    UCSBOrganization organization =
+        ucsbOrganizationRepository
+            .findById(orgCode)
+            .orElseThrow(() -> new EntityNotFoundException(UCSBOrganization.class, orgCode));
+
+    ucsbOrganizationRepository.delete(organization);
+    return genericMessage(String.format("Organization with code %s deleted", orgCode));
   }
 }

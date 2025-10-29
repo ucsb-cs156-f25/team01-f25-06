@@ -1,11 +1,13 @@
 package edu.ucsb.cs156.example.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -244,6 +246,96 @@ public class UCSBOrganizationControllerTests extends ControllerTestCase {
 
     // assert
     verify(ucsbOrganizationRepository, times(1)).findById("DNE");
+    String responseString = response.getResponse().getContentAsString();
+    assert responseString.contains("EntityNotFoundException");
+    assert responseString.contains("DNE");
+  }
+
+  @Test
+  public void logged_out_users_cannot_delete() throws Exception {
+    mockMvc.perform(delete("/api/ucsborganizations?orgCode=SKY")).andExpect(status().is(403));
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void logged_in_users_cannot_delete() throws Exception {
+    mockMvc
+        .perform(delete("/api/ucsborganizations?orgCode=SKY"))
+        .andExpect(status().is(403)); // only admins can delete
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void an_admin_user_can_delete_an_organization() throws Exception {
+    // arrange
+    UCSBOrganization org =
+        UCSBOrganization.builder()
+            .orgCode("SKY")
+            .orgTranslationShort("SKYDIVING CLUB")
+            .orgTranslation("SKYDIVING CLUB AT UCSB")
+            .inactive(false)
+            .build();
+
+    when(ucsbOrganizationRepository.findById("SKY")).thenReturn(Optional.of(org));
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(delete("/api/ucsborganizations?orgCode=SKY").with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // assert
+    verify(ucsbOrganizationRepository, times(1)).findById("SKY");
+    verify(ucsbOrganizationRepository, times(1)).delete(org);
+    String responseString = response.getResponse().getContentAsString();
+    assert responseString.contains("Organization with code SKY deleted");
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void an_admin_user_can_delete_an_inactive_organization() throws Exception {
+    // arrange
+    UCSBOrganization org =
+        UCSBOrganization.builder()
+            .orgCode("OSLI")
+            .orgTranslationShort("STUDENT LIFE")
+            .orgTranslation("OFFICE OF STUDENT LIFE")
+            .inactive(true)
+            .build();
+
+    when(ucsbOrganizationRepository.findById("OSLI")).thenReturn(Optional.of(org));
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(delete("/api/ucsborganizations?orgCode=OSLI").with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // assert
+    verify(ucsbOrganizationRepository, times(1)).findById("OSLI");
+    verify(ucsbOrganizationRepository, times(1)).delete(org);
+    String responseString = response.getResponse().getContentAsString();
+    assert responseString.contains("Organization with code OSLI deleted");
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void an_admin_user_cannot_delete_nonexistent_organization() throws Exception {
+    // arrange
+    when(ucsbOrganizationRepository.findById("DNE")).thenReturn(Optional.empty());
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(delete("/api/ucsborganizations?orgCode=DNE").with(csrf()))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    // assert
+    verify(ucsbOrganizationRepository, times(1)).findById("DNE");
+    verify(ucsbOrganizationRepository, times(0)).delete(any());
     String responseString = response.getResponse().getContentAsString();
     assert responseString.contains("EntityNotFoundException");
     assert responseString.contains("DNE");

@@ -113,7 +113,7 @@ import org.springframework.web.bind.annotation.RestController;
    * @param incoming the new review
    * @return the updated review object
    */
-  @Operation(summary = &quot;Update a single date&quot;)
+  @Operation(summary = &quot;Update a single review&quot;)
   @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
   @PutMapping(&quot;&quot;)
   public MenuItemReview updateMenuItemReview(

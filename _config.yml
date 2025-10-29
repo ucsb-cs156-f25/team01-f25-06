@@ -23,4 +23,4 @@ repo_name: "TBD"
 repo: ucsb-cs156-f25/team01-f25-06
 owner: ucsb-cs156-f25
 repo_name: team01-f25-06
-pull_requests: [{"author":{"id":"U_kgDOCMvu0g","is_bot":false,"login":"austinchan3678","name":""},"headRefName":"austin/fix-database","number":70,"title":"revert changeset changes and apply rename fix","url":"https://github.com/ucsb-cs156-f25/team01-f25-06/pull/70"},{"author":{"id":"U_kgDOCVy2iQ","is_bot":false,"login":"AbhiramA02","name":""},"headRefName":"aa-get-RecommendationRequest-controller","number":69,"title":"aa - add GET by ID for recommendation requests","url":"https://github.com/ucsb-cs156-f25/team01-f25-06/pull/69"}]
+pull_requests: [{"author":{"id":"U_kgDOCVy2iQ","is_bot":false,"login":"AbhiramA02","name":""},"headRefName":"aa-get-RecommendationRequest-controller","number":69,"title":"aa - add GET by ID for recommendation requests","url":"https://github.com/ucsb-cs156-f25/team01-f25-06/pull/69"}]

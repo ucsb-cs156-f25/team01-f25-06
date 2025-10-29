@@ -10,6 +10,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.ucsb.cs156.example.ControllerTestCase;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -246,6 +248,104 @@ public class UCSBOrganizationControllerTests extends ControllerTestCase {
 
     // assert
     verify(ucsbOrganizationRepository, times(1)).findById("DNE");
+    String responseString = response.getResponse().getContentAsString();
+    assert responseString.contains("EntityNotFoundException");
+    assert responseString.contains("DNE");
+  }
+
+  @Test
+  public void logged_out_users_cannot_edit() throws Exception {
+    mockMvc
+        .perform(
+            put(
+                "/api/ucsborganizations?orgCode=SKY&orgTranslationShort=SKY&orgTranslation=SKY&inactive=false"))
+        .andExpect(status().is(403));
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void logged_in_users_cannot_edit() throws Exception {
+    mockMvc
+        .perform(
+            put(
+                "/api/ucsborganizations?orgCode=SKY&orgTranslationShort=SKY&orgTranslation=SKY&inactive=false"))
+        .andExpect(status().is(403));
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void an_admin_user_can_edit() throws Exception {
+    // arrange
+    UCSBOrganization existingOrg =
+        UCSBOrganization.builder()
+            .orgCode("SKY")
+            .orgTranslationShort("OLD SHORT TRANSLATION")
+            .orgTranslation("OLD TRANSLATION")
+            .inactive(false)
+            .build();
+
+    UCSBOrganization updatedOrg =
+        UCSBOrganization.builder()
+            .orgCode("SKY")
+            .orgTranslationShort("NEW SHORT TRANSLATION")
+            .orgTranslation("NEW TRANSLATION")
+            .inactive(true)
+            .build();
+
+    String requestBody = mapper.writeValueAsString(updatedOrg);
+
+    when(ucsbOrganizationRepository.findById("SKY")).thenReturn(Optional.of(existingOrg));
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(
+                put("/api/ucsborganizations?orgCode=SKY")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .characterEncoding("utf-8")
+                    .content(requestBody)
+                    .with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // assert
+    verify(ucsbOrganizationRepository, times(1)).findById("SKY");
+    verify(ucsbOrganizationRepository, times(1)).save(existingOrg);
+    String responseString = response.getResponse().getContentAsString();
+    assertEquals(requestBody, responseString);
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void an_admin_user_cannot_put_nonexistent_organization() throws Exception {
+    // arrange
+    UCSBOrganization updatedOrg =
+        UCSBOrganization.builder()
+            .orgCode("DNE")
+            .orgTranslationShort("NEW SHORT TRANSLATION")
+            .orgTranslation("NEW TRANSLATION")
+            .inactive(false)
+            .build();
+
+    String requestBody = mapper.writeValueAsString(updatedOrg);
+
+    when(ucsbOrganizationRepository.findById("DNE")).thenReturn(Optional.empty());
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(
+                put("/api/ucsborganizations?orgCode=DNE")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .characterEncoding("utf-8")
+                    .content(requestBody)
+                    .with(csrf()))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    // assert
+    verify(ucsbOrganizationRepository, times(1)).findById("DNE");
+    verify(ucsbOrganizationRepository, times(0)).save(any());
     String responseString = response.getResponse().getContentAsString();
     assert responseString.contains("EntityNotFoundException");
     assert responseString.contains("DNE");

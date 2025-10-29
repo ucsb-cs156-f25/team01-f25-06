@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -275,6 +276,55 @@ public class UCSBDiningCommonsMenuItemControllerTests extends ControllerTestCase
     JsonNode expected =
         mapper.readTree(
             "{\"message\":\"UCSBDiningCommonsMenuItem with id 99 not found\",\"type\":\"EntityNotFoundException\"}");
+    JsonNode actual = mapper.readTree(responseString);
+    assertEquals(expected, actual);
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void test_delete_menu_item_exists() throws Exception {
+    UCSBDiningCommonsMenuItem item =
+        UCSBDiningCommonsMenuItem.builder()
+            .id(15L)
+            .diningCommonsCode("ortega")
+            .name("Waffles")
+            .station("Breakfast")
+            .build();
+
+    when(ucsbDiningCommonsMenuItemRepository.findById(eq(15L))).thenReturn(Optional.of(item));
+
+    MvcResult response =
+        mockMvc
+            .perform(delete("/api/ucsbdiningcommonsmenuitem?id=15").with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    verify(ucsbDiningCommonsMenuItemRepository, times(1)).findById(15L);
+    verify(ucsbDiningCommonsMenuItemRepository, times(1)).delete(item);
+
+    String expectedResponse = "record 15 deleted";
+    String actualResponse = response.getResponse().getContentAsString();
+    assertEquals(expectedResponse, actualResponse);
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void test_delete_menu_item_not_found() throws Exception {
+    when(ucsbDiningCommonsMenuItemRepository.findById(eq(999L))).thenReturn(Optional.empty());
+
+    MvcResult response =
+        mockMvc
+            .perform(delete("/api/ucsbdiningcommonsmenuitem?id=999").with(csrf()))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    verify(ucsbDiningCommonsMenuItemRepository, times(1)).findById(999L);
+    verify(ucsbDiningCommonsMenuItemRepository, times(0)).delete(any());
+
+    String responseString = response.getResponse().getContentAsString();
+    JsonNode expected =
+        mapper.readTree(
+            "{\"message\":\"UCSBDiningCommonsMenuItem with id 999 not found\",\"type\":\"EntityNotFoundException\"}");
     JsonNode actual = mapper.readTree(responseString);
     assertEquals(expected, actual);
   }
